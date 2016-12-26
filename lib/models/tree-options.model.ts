@@ -64,58 +64,28 @@ export interface IActionMapping {
   }
 }
 
-export class TreeOptions {
-  get childrenField(): string { return this.options.childrenField || 'children'}
-  get displayField(): string { return this.options.displayField || 'name'}
-  get idField(): string { return this.options.idField || 'id'}
-  get isExpandedField(): string { return this.options.isExpandedField || 'isExpanded'}
-  get isHiddenField(): string { return this.options.isHiddenField || 'isHidden'}
-  get treeNodeTemplate(): any { return this.options.treeNodeTemplate }
-  get loadingComponent(): any { return this.options.loadingComponent }
-  get getChildren(): any { return this.options.getChildren }
-  get hasCustomContextMenu(): boolean { return this.options.hasCustomContextMenu }
-  get context(): any { return this.options.context }
-  get allowDrag(): boolean { return this.options.allowDrag }
-  get levelPadding(): number { return this.options.levelPadding || 0 }
-  actionMapping: IActionMapping;
+const defaultOptions = {
+  fields: {
+    children: 'children',
+    display: 'name',
+    id: 'id',
+    isHidden: 'isHidden'
+  },
+  levelPadding: 0,
+  actionMapping: defaultActionMapping
+}
 
-  constructor(private options:ITreeOptions = {}) {
-    this.actionMapping = defaultsDeep(this.options.actionMapping, defaultActionMapping);
+export function getOption(options, field) {
+  const result = get(options, field);
 
-    if (options.hasCustomContextMenu) {
-      deprecated('hasCustomContextMenu', 'actionMapping: mouse: contextMenu');
-    }
+  return result === undefined ? get(defaultOptions, field) : result;
+}
 
-    if (options.context) {
-      deprecated('context', 'values directly in a template in the content of the <Tree> component like this: <Tree><template #treeNodeTemplate let-node>{{ outsideValue }}</template></Tree>.  If you don\'t have time to update your code and don\'t need AoT compilation, use DeprecatedTreeModule');
-    }
-
-    if (options.treeNodeTemplate) {
-      deprecated('treeNodeTemplate', 'a template in the content of the <Tree> component like this: <Tree><template #treeNodeTemplate let-node>...</template></Tree>.  If you don\'t have time to update your code and don\'t need AoT compilation, use DeprecatedTreeModule');
-    }
-
-    if (options.loadingComponent) {
-      deprecated('loadingComponent', 'a template in the content of the <Tree> component like this: <Tree><template #loadingTemplate>...</template></Tree>.  If you don\'t have time to update your code and don\'t need AoT compilation, use DeprecatedTreeModule');
-    }
-
-    if (get(options, 'mouse.shift')) {
-      deprecated('mouse.shift', '$event.shiftKey in click action instead');
-    }
-
-    if (get(options, 'mouse.ctrl')) {
-      deprecated('mouse.ctrl', '$event.ctrlKey in click action instead');
-    }
-
-    if (get(options, 'mouse.alt')) {
-      deprecated('mouse.alt', '$event.altKey in click action instead');
-    }
-  }
-  allowDrop(element, to):boolean {
-    if (this.options.allowDrop instanceof Function) {
-      return this.options.allowDrop(element, to);
+export function allowDrop(options, element, to):boolean {
+    if (options.allowDrop instanceof Function) {
+      return options.allowDrop(element, to);
     }
     else {
-      return this.options.allowDrop === undefined ? true : this.options.allowDrop;
+      return options.allowDrop === undefined ? true : options.allowDrop;
     }
-  }
 }

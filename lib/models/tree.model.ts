@@ -5,27 +5,72 @@ import { TreeOptions } from './tree-options.model';
 import { ITreeModel } from '../defs/api';
 import { TREE_EVENTS } from '../constants/events';
 
-import { deprecated } from '../deprecated';
-
 import { first, last, compact, find, includes, remove, indexOf, pullAt, isString, isFunction } from 'lodash';
 
-@Injectable()
-export class TreeModel implements ITreeModel {
-  roots: TreeNode[];
-  options: TreeOptions = new TreeOptions();
-  nodes: any[];
-  expandedNodeIds: { [id:string]: boolean } = {};
-  expandedNodes: TreeNode[];
-  activeNodeIds: { [id:string]: boolean } = {};
-  activeNodes: TreeNode[];
-  _focusedNode: TreeNode = null;
-  focusedNodeId: string = null;
-  static focusedTree = null;
-  private events: any;
-  virtualRoot: TreeNode;
-  firstUpdate = true;
+export class TreesState {
+  @observable focusedTree = null;
+}
+export const treesState = new TreesState();
 
-  eventNames = Object.keys(TREE_EVENTS);
+
+@Injectable()
+export class TreeModel {
+  @observable roots: any[];
+  @observable allNodes: {[id:any]:any};
+  @observable parents: {[id:any]:any};
+  @observable options: ITreeOptions;
+  @observable treeState = new TreeState();
+
+  @computed get isFocused(): boolean {
+    return treesState.focusedTree === this;
+  }
+
+  @computed get expandedNodes(): TreeNode[] {
+    return compact(Object.keys(this.treeState.expandedNodeIds)
+      .filter((id) => this.treeState.expandedNodeIds[id])
+      .map((id) => this.getNodeById(id)));
+  }
+
+  @computed get activeNodes(): TreeNode[] {
+    return compact(Object.keys(this.treeState.activeNodeIds)
+      .filter((id) => this.expandedNodeIds[id])
+      .map((id) => this.getNodeById(id)));
+  }
+  @computed get focusedNode(): TreeNode {
+    return this.getNodeById(this.focusedNodeId);
+  }
+
+  registerNode(node, parent) {
+    if (!this._getField(node, 'id')) {
+      console.warn('Node does not contain ID, assigning one to it. This will not work if your data is immutable');
+      this._setField(node, 'id', uuid());
+    }
+    this.allNodes[node.id] = node;
+    this.parents[node.id] = parent;
+  }
+
+  deregisterNode(node) {
+    delete this.allNodes[node.id];
+    delete this.parents[node.id];
+  }
+
+  private _getField(node, fieldName) {
+    return node[getOption(this.options, `fields.${fieldName}`)];
+  }
+
+  private _setField(node, fieldName, value) {
+    node[getOption(this.options, `fields.${fieldName}`)] = value;
+  }
+}
+
+export class TreeState {
+  @observable expandedNodeIds: { [id:string]: boolean } = {};
+  @observable activeNodeIds: { [id:string]: boolean } = {};
+  @observable focusedNodeId: string = null;
+}
+
+  private events: any;
+  private eventNames = Object.keys(TREE_EVENTS);
 
   setData({ nodes, options = null, events = null }:{nodes:any,options:any,events:any}) {
     if (options) {
@@ -37,24 +82,9 @@ export class TreeModel implements ITreeModel {
     if (nodes) {
       this.nodes = nodes;
     }
-
-    this.update();
   }
 
   update() {
-    // Rebuild tree:
-    let virtualRootConfig = {
-      virtual: true,
-      [this.options.childrenField]: this.nodes
-    };
-
-    this.virtualRoot = this.getTreeNode(virtualRootConfig, null);
-
-    this.roots = this.virtualRoot.children;
-
-    this._initTreeNodeContentComponent();
-    this._initLoadingComponent();
-
     this._loadState();
 
     // Fire event:
@@ -130,47 +160,7 @@ export class TreeModel implements ITreeModel {
   }
 
   setFocus(value) {
-    TreeModel.focusedTree = value ? this : null;
-  }
-
-
-  private _treeNodeContentComponent:any;
-  get treeNodeContentComponent() { return this._treeNodeContentComponent };
-
-  private _loadingComponent:any;
-  get loadingComponent() { return this._loadingComponent };
-
-  // if treeNodeTemplate is a component - use it,
-  // otherwise - it's a template, so wrap it with an AdHoc component
-  _initTreeNodeContentComponent() {
-    this._treeNodeContentComponent = this.options.treeNodeTemplate;
-    if (typeof this._treeNodeContentComponent === 'string') {
-      this._treeNodeContentComponent = this._createAdHocComponent(this._treeNodeContentComponent);
-    }
-  }
-
-  // same for loading component
-  _initLoadingComponent() {
-    this._loadingComponent = this.options.loadingComponent;
-    if (typeof this._loadingComponent === 'string') {
-      this._loadingComponent = this._createAdHocComponent(this._loadingComponent);
-    }
-  }
-
-  _loadState() {
-    if (this.focusedNodeId) {
-      this._focusedNode = this.getNodeById(this.focusedNodeId);
-    }
-
-    this.expandedNodes = Object.keys(this.expandedNodeIds)
-      .filter((id) => this.expandedNodeIds[id])
-      .map((id) => this.getNodeById(id))
-    this.expandedNodes = compact(this.expandedNodes);
-
-    this.activeNodes = Object.keys(this.activeNodeIds)
-      .filter((id) => this.expandedNodeIds[id])
-      .map((id) => this.getNodeById(id))
-    this.activeNodes = compact(this.activeNodes);
+    treesState.focusedTree = value ? this : null;
   }
 
   getNodeByPath(path, startNode=null):TreeNode {
@@ -190,7 +180,7 @@ export class TreeModel implements ITreeModel {
   }
 
   getNodeById(id) {
-    return this.getNodeBy({ id });
+    return this.allNodes[id];
   }
 
   getNodeBy(predicate, startNode = null) {
@@ -390,4 +380,7 @@ export class TreeModel implements ITreeModel {
 
     this.fireEvent({ eventName: TREE_EVENTS.onMoveNode, node: originalNode, to: { parent: to.parent.data, index: toIndex } });
   }
+}
+function uuid() {
+  return Math.floor(Math.random() * 10000000000000);
 }

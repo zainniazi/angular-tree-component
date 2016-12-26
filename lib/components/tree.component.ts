@@ -4,6 +4,7 @@ import { TreeModel } from '../models/tree.model';
 import { TreeDraggedElement } from '../models/tree-dragged-element.model';
 import { TreeOptions } from '../models/tree-options.model';
 import { KEYS } from '../constants/keys';
+import { TREE_EVENTS } from '../constants/events';
 
 import * as _ from 'lodash'
 
@@ -94,7 +95,7 @@ export class TreeComponent implements OnChanges {
     this.treeModel.setData({
       options: changes.options && changes.options.currentValue,
       nodes: changes.nodes && changes.nodes.currentValue,
-      events: _.pick(this, this.treeModel.eventNames)
+      events: _.pick(this, Object.keys(TREE_EVENTS))
     });
   }
 }

@@ -49,7 +49,7 @@ import { ITreeNodeTemplate } from './tree-node-content.component';
   template: `
     <div
       *ngIf="!node.isHidden"
-      class="tree-node tree-node-level-{{ node.level }}"
+      class="tree-node tree-node-level-{{ level }}"
       [class.tree-node-expanded]="node.isExpanded && node.hasChildren"
       [class.tree-node-collapsed]="node.isCollapsed && node.hasChildren"
       [class.tree-node-leaf]="node.isLeaf"
@@ -93,11 +93,11 @@ import { ITreeNodeTemplate } from './tree-node-content.component';
            *ngIf="node.isExpanded">
         <div *ngIf="node.children">
           <TreeNode
-            *ngFor="let node of node.children; let i = index"
-            [node]="node"
+            *ngFor="let child of node.children; let i = index"
+            [node]="child"
             [nodeIndex]="i"
-            [treeNodeContentTemplate]="treeNodeContentTemplate"
-            [loadingTemplate]="loadingTemplate">
+            [level]="level + 1"
+            [parent]="node">
           </TreeNode>
         </div>
         <LoadingComponent
@@ -116,12 +116,20 @@ import { ITreeNodeTemplate } from './tree-node-content.component';
 })
 
 export class TreeNodeComponent implements AfterViewInit {
-  @Input() node:TreeNode;
+  @Input() node:any;
+  @Input() parent:any;
   @Input() nodeIndex:number;
-  @Input() treeNodeContentTemplate: TemplateRef<ITreeNodeTemplate>;
-  @Input() loadingTemplate: TemplateRef<any>;
+  @Input() level:number = 0;
 
   constructor(private elementRef: ElementRef) {
+  }
+
+  ngOnInit() {
+    this.treeModel.registerNode(this.node, this.parent);
+  }
+
+  ngOnDestroy() {
+    this.treeModel.deregisterNode(this);
   }
 
   onDrop($event) {
