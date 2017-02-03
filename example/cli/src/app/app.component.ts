@@ -38,12 +38,22 @@ const actionMapping:IActionMapping = {
   <form>
     <input #filter (keyup)="filterNodes(filter.value, tree)" placeholder="filter nodes"/>
   </form>
-  <Tree
-    #tree
-    [nodes]="nodes"
-    [focused]="true"
-  >
-  </Tree>
+  <div     style="height: 400px">
+    <Tree
+      #tree
+      [nodes]="nodes"
+      [focused]="true"
+      [options]="customTemplateStringOptions"
+      (onEvent)="onEvent($event)"
+    >
+      <template #treeNodeTemplate let-node>
+        <span title="{{node.data.subTitle}}">{{ node.data.name }}</span>
+        <span class="pull-right">{{ childrenCount(node) }}</span>
+        <button (click)="go($event)">Custom Action</button>
+      </template>
+      <template #loadingTemplate>Loading, please hold....</template>
+    </Tree>
+  </div>
   <br>
   <p>Keys:</p>
   down | up | left | right | space | enter
@@ -134,7 +144,7 @@ export class AppComponent {
         }
       ];
 
-      for(let i = 0; i < 10000; i++) {
+      for(let i = 0; i < 1000; i++) {
         this.nodes.push({
           name: `rootDynamic${i}`,
           subTitle: `root created dynamically ${i}`,
