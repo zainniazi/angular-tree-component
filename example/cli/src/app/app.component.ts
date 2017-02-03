@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { TreeNode, TREE_ACTIONS, KEYS, IActionMapping } from 'angular2-tree-component';
+import { TreeNode, TREE_ACTIONS, KEYS, IActionMapping } from '../../../../lib/angular2-tree-component';
 
 const actionMapping:IActionMapping = {
   mouse: {
@@ -42,15 +42,7 @@ const actionMapping:IActionMapping = {
     #tree
     [nodes]="nodes"
     [focused]="true"
-    [options]="customTemplateStringOptions"
-    (onEvent)="onEvent($event)"
   >
-  <template #treeNodeTemplate let-node>
-  <span title="{{node.data.subTitle}}">{{ node.data.name }}</span>
-  <span class="pull-right">{{ childrenCount(node) }}</span>
-  <button (click)="go($event)">Custom Action</button>
-  </template>
-  <template #loadingTemplate>Loading, please hold....</template>
   </Tree>
   <br>
   <p>Keys:</p>
@@ -92,7 +84,7 @@ const actionMapping:IActionMapping = {
 export class AppComponent {
   nodes:any[] = null;
   constructor() {
-    setTimeout(() => {
+    // setTimeout(() => {
       this.nodes = [
         {
 
@@ -141,7 +133,17 @@ export class AppComponent {
           hasChildren: true
         }
       ];
-    }, 1);
+
+      for(let i = 0; i < 10000; i++) {
+        this.nodes.push({
+          name: `rootDynamic${i}`,
+          subTitle: `root created dynamically ${i}`,
+          hasChildren: false
+        });
+      }
+      console.time();
+
+    // }, 1);
   }
 
   asyncChildren = [
@@ -153,6 +155,10 @@ export class AppComponent {
       subTitle: 'new and improved2'
     }
   ];
+
+  ngAfterViewInit() {
+    console.timeEnd();
+  }
 
   getChildren(node:any) {
     return new Promise((resolve, reject) => {
