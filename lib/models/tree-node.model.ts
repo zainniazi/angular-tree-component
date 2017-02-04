@@ -23,7 +23,7 @@ export class TreeNode implements ITreeNode {
   private _originalNode: any;
   get originalNode() { return this._originalNode; };
 
-  constructor(public data: any, public parent: TreeNode, public treeModel: TreeModel) {
+  constructor(public data: any, public parent: TreeNode, public treeModel: TreeModel, public index: number) {
     this.id = this.id || uuid(); // Make sure there's a unique ID
     this.level = this.parent ? this.parent.level + 1 : 0;
     this.path = this.parent ? [...this.parent.path, this.id] : [];
@@ -344,9 +344,28 @@ export class TreeNode implements ITreeNode {
     }
   }
 
+  getSelfHeight() {
+    if (this.data.virtual) {
+      return 0;
+    }
+    else {
+      return this.index === 0 ? 27 : 25;
+    }
+  }
+  getHeight() {
+    return this.getSelfHeight() + this.getChildrenHeight();
+  }
+
+  getChildrenHeight() {
+    if (this.children && this.isExpanded || this.data.virtual) {
+      return this.children.reduce((sum, item) => sum + item.getHeight(), 0);
+    }
+    return 0;
+  }
+
   _initChildren() {
     this.children = this.getField('children')
-      .map(c => new TreeNode(c, this, this.treeModel));
+      .map((c, index) => new TreeNode(c, this, this.treeModel, index));
   }
 }
 

@@ -14,9 +14,9 @@ import { TreeNode } from '../models/tree-node.model';
          *ngIf="node.isExpanded">
       <div *ngIf="node.children">
         <TreeNode
-          *ngFor="let node of node.children; let i = index"
+          *ngFor="let node of node.children"
           [node]="node"
-          [index]="i"
+          [index]="node.index"
           [templates]="templates">
         </TreeNode>
       </div>

@@ -53,7 +53,7 @@ export class TreeModel implements ITreeModel {
       [this.options.childrenField]: this.nodes
     };
 
-    this.virtualRoot = this.getTreeNode(virtualRootConfig, null);
+    this.virtualRoot = new TreeNode(virtualRootConfig, null, this, 0);
 
     this.roots = this.virtualRoot.children;
 
@@ -108,10 +108,6 @@ export class TreeModel implements ITreeModel {
 
   getActiveNodes(): TreeNode[] {
     return this.activeNodes;
-  }
-
-  getTreeNode(node: any, parent: TreeNode): TreeNode {
-    return new TreeNode(node, parent, this);
   }
 
   getVisibleRoots() {
