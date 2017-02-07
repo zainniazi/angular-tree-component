@@ -1,4 +1,5 @@
 import { ElementRef } from '@angular/core';
+import { observable, computed } from 'mobx';
 import { TreeModel } from './tree.model';
 import { TreeOptions } from './tree-options.model';
 import { ITreeNode } from '../defs/api';
@@ -8,25 +9,28 @@ import { deprecated } from '../deprecated';
 import * as _ from 'lodash';
 
 export class TreeNode implements ITreeNode {
-  get isHidden() { return this.getField('isHidden'); };
-  set isHidden(value) { this.setField('isHidden', value); };
-  get isExpanded() { return this.treeModel.isExpanded(this); };
-  get isActive() { return this.treeModel.isActive(this); };
-  get isFocused() { return this.treeModel.isNodeFocused(this); };
+  @computed get isHidden() { return this.treeModel.isHidden(this); };
+  @computed get isExpanded() { return this.treeModel.isExpanded(this); };
+  @computed get isActive() { return this.treeModel.isActive(this); };
+  @computed get isFocused() { return this.treeModel.isNodeFocused(this); };
 
-  level: number;
-  path: string[];
   elementRef: ElementRef;
-  children: TreeNode[];
   allowDrop: (draggedElement: any) => boolean;
+  @observable children: TreeNode[];
+  @observable index: number;
+  @computed get level(): number {
+    return this.parent ? this.parent.level + 1 : 0;
+  }
+  @computed get path(): string[] {
+    return this.parent ? [...this.parent.path, this.id] : [];
+  }
 
   private _originalNode: any;
   get originalNode() { return this._originalNode; };
 
-  constructor(public data: any, public parent: TreeNode, public treeModel: TreeModel, public index: number) {
+  constructor(public data: any, public parent: TreeNode, public treeModel: TreeModel, index: number) {
     this.id = this.id || uuid(); // Make sure there's a unique ID
-    this.level = this.parent ? this.parent.level + 1 : 0;
-    this.path = this.parent ? [...this.parent.path, this.id] : [];
+    this.index = index;
 
     if (this.getField('children')) {
       this._initChildren();
@@ -72,8 +76,7 @@ export class TreeNode implements ITreeNode {
 
   // traversing:
   _findAdjacentSibling(steps, skipHidden = false) {
-    const index = this.getIndexInParent(skipHidden);
-    return this._getParentsChildren(skipHidden)[index + steps];
+    return this._getParentsChildren(skipHidden)[this.index + steps];
   }
 
   findNextSibling(skipHidden = false) {
@@ -85,6 +88,10 @@ export class TreeNode implements ITreeNode {
   }
 
   getVisibleChildren() {
+    return this.visibleChildren;
+  }
+
+  @computed get visibleChildren() {
     return (this.children || []).filter((node) => !node.isHidden);
   }
 
@@ -305,14 +312,26 @@ export class TreeNode implements ITreeNode {
       });
     }
 
-    this.isHidden = !isVisible;
+    this.setIsHidden(!isVisible);
     if (autoShow) {
       this.ensureVisible();
     }
   }
 
+  setIsHidden(value) {
+    this.treeModel.setIsHidden(this, value);
+  }
+
+  hide() {
+    this.setIsHidden(true);
+  }
+
+  show() {
+    this.setIsHidden(false);
+  }
+
   clearFilter() {
-    this.isHidden = false;
+    this.show();
     if (this.children) this.children.forEach((child) => child.clearFilter());
   }
 
@@ -349,16 +368,33 @@ export class TreeNode implements ITreeNode {
       return 0;
     }
     else {
-      return this.index === 0 ? 27 : 25;
+      return this.index === 0 ? 26 : 24;
     }
   }
-  getHeight() {
-    return this.getSelfHeight() + this.getChildrenHeight();
+
+  @computed get relativePosition() {
+    if (this.data.virtual || this.index === 0) {
+      return 0;
+    }
+    const prevSibling = this.findPreviousSibling(true);
+
+    return prevSibling.relativePosition + prevSibling.height;
   }
 
-  getChildrenHeight() {
+  @computed get position() {
+    if (this.data.virtual) {
+      return 0;
+    }
+    return this.relativePosition + this.parent.position + this.parent.getSelfHeight();
+  }
+
+  @computed get height() {
+    return this.getSelfHeight() + this.childrenHeight;
+  }
+
+  @computed get childrenHeight() {
     if (this.children && this.isExpanded || this.data.virtual) {
-      return this.children.reduce((sum, item) => sum + item.getHeight(), 0);
+      return this.children.reduce((sum, item) => sum + item.height, 0);
     }
     return 0;
   }

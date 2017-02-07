@@ -1,4 +1,5 @@
 import { Injectable, Component, Input, EventEmitter, TemplateRef, Renderer } from '@angular/core';
+import { observable, computed } from 'mobx';
 import { TreeNode } from './tree-node.model';
 import { TreeOptions } from './tree-options.model';
 import { ITreeModel } from '../defs/api';
@@ -12,16 +13,14 @@ import { first, last, compact, find, includes, remove, indexOf, pullAt, isString
 export class TreeModel implements ITreeModel {
   static focusedTree = null;
 
-  roots: TreeNode[];
   options: TreeOptions = new TreeOptions();
   nodes: any[];
-  expandedNodeIds: { [id: string]: boolean } = {};
-  expandedNodes: TreeNode[];
-  activeNodeIds: { [id: string]: boolean } = {};
-  activeNodes: TreeNode[];
-  _focusedNode: TreeNode = null;
-  focusedNodeId: string = null;
-  virtualRoot: TreeNode;
+  @observable roots: TreeNode[];
+  @observable expandedNodeIds: { [id: string]: boolean } = {};
+  @observable activeNodeIds: { [id: string]: boolean } = {};
+  @observable hiddenNodeIds: { [id: string]: boolean } = {};
+  @observable focusedNodeId: string = null;
+  @observable virtualRoot: TreeNode;
   firstUpdate = true;
 
   eventNames = Object.keys(TREE_EVENTS);
@@ -60,8 +59,6 @@ export class TreeModel implements ITreeModel {
     this._initTreeNodeContentComponent();
     this._initLoadingComponent();
 
-    this._loadState();
-
     // Fire event:
     if (this.firstUpdate) {
       if (this.roots) {
@@ -78,7 +75,7 @@ export class TreeModel implements ITreeModel {
     startNode = startNode || this.virtualRoot;
 
     if (startNode.data[this.options.isExpandedField]) {
-      this.expandedNodeIds[startNode.id] = true;
+      this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, {[startNode.id]: true});
     }
     if (startNode.children) {
       startNode.children.forEach((child) => this._calculateExpandedNodes(child));
@@ -90,15 +87,11 @@ export class TreeModel implements ITreeModel {
     this.events.onEvent.emit(event);
   }
 
-  get focusedNode() { deprecated('focusedNode attribute', 'getFocusedNode'); return this.getFocusedNode(); }
-  set focusedNode(value) { deprecated('focusedNode = ', 'setFocusedNode'); this.setFocusedNode(value); };
-
   getFocusedNode(): TreeNode {
-    return this._focusedNode;
+    return this.focusedNode;
   }
 
   setFocusedNode(node) {
-    this._focusedNode = node;
     this.focusedNodeId = node ? node.id : null;
   }
 
@@ -127,7 +120,7 @@ export class TreeModel implements ITreeModel {
   }
 
   isNodeFocused(node) {
-    return this._focusedNode === node;
+    return this.focusedNode === node;
   }
 
   setFocus(value) {
@@ -159,20 +152,24 @@ export class TreeModel implements ITreeModel {
     }
   }
 
-  _loadState() {
-    if (this.focusedNodeId) {
-      this._focusedNode = this.getNodeById(this.focusedNodeId);
-    }
+  @computed get focusedNode() {
+    return this.focusedNodeId ? this.getNodeById(this.focusedNodeId) : null;
+  }
 
-    this.expandedNodes = Object.keys(this.expandedNodeIds)
+  @computed get expandedNodes() {
+    const nodes = Object.keys(this.expandedNodeIds)
       .filter((id) => this.expandedNodeIds[id])
       .map((id) => this.getNodeById(id));
-    this.expandedNodes = compact(this.expandedNodes);
 
-    this.activeNodes = Object.keys(this.activeNodeIds)
+    return compact(nodes);
+  }
+
+  @computed get activeNodes() {
+    const nodes = Object.keys(this.activeNodeIds)
       .filter((id) => this.expandedNodeIds[id])
       .map((id) => this.getNodeById(id));
-    this.activeNodes = compact(this.activeNodes);
+
+    return compact(nodes);
   }
 
   getNodeByPath(path, startNode= null): TreeNode {
@@ -286,25 +283,16 @@ export class TreeModel implements ITreeModel {
         this.fireEvent({ eventName: TREE_EVENTS.onDeactivate, node: activeNode });
       });
 
-    this.activeNodeIds = {};
-    this.activeNodes = [];
     if (value) {
-      this.activeNodes.push(node);
-      this.activeNodeIds[node.id] = true;
+      this.activeNodeIds = {[node.id]: true};
+    }
+    else {
+      this.activeNodeIds = {};
     }
   }
 
   _setActiveNodeMulti(node, value) {
-    this.activeNodeIds[node.id] = value;
-    if (value) {
-      if (!includes(this.activeNodes, node)) {
-        this.activeNodes.push(node);
-      }
-    } else {
-      if (includes(this.activeNodes, node)) {
-        remove(this.activeNodes, node);
-      }
-    }
+    this.activeNodeIds = Object.assign({}, this.activeNodeIds, {[node.id]: value});
   }
 
   isExpanded(node) {
@@ -312,12 +300,15 @@ export class TreeModel implements ITreeModel {
   }
 
   setExpandedNode(node, value) {
-    const index = indexOf(this.expandedNodes, node);
+    this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, {[node.id]: value});
+  }
 
-    if (value && !index) this.expandedNodes.push(node);
-    else if (index) pullAt(this.expandedNodes, index);
+  isHidden(node) {
+    return this.hiddenNodeIds[node.id];
+  }
 
-    this.expandedNodeIds[node.id] = value;
+  setIsHidden(node, value) {
+    this.hiddenNodeIds = Object.assign({}, this.hiddenNodeIds, {[node.id]: value});
   }
 
   performKeyAction(node, $event) {
