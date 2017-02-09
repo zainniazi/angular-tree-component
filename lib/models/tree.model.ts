@@ -2,6 +2,7 @@ import { Injectable, Component, Input, EventEmitter, TemplateRef, Renderer } fro
 import { observable, computed } from 'mobx';
 import { TreeNode } from './tree-node.model';
 import { TreeOptions } from './tree-options.model';
+import { TreeVirtualScroll } from './tree-virtual-scroll.model';
 import { ITreeModel } from '../defs/api';
 import { TREE_EVENTS } from '../constants/events';
 
@@ -22,6 +23,7 @@ export class TreeModel implements ITreeModel {
   @observable focusedNodeId: string = null;
   @observable virtualRoot: TreeNode;
   firstUpdate = true;
+  public virtualScroll:TreeVirtualScroll;
 
   eventNames = Object.keys(TREE_EVENTS);
 
@@ -29,7 +31,8 @@ export class TreeModel implements ITreeModel {
   private _loadingComponent: any;
   private events: any;
 
-  constructor(public renderer: Renderer) {}
+  constructor(public renderer: Renderer) {
+  }
 
   setData({ nodes, options = null, events = null }: {nodes: any, options: any, events: any}) {
     if (options) {

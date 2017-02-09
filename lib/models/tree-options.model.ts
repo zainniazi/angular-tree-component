@@ -132,4 +132,22 @@ export class TreeOptions {
   nodeClass(node: TreeNode): string {
     return this.options.nodeClass ? this.options.nodeClass(node) : '';
   }
+
+  nodeHeight(node: TreeNode):number {
+    if (node.data.virtual) {
+      return 0;
+    }
+
+    const nodeHeight = this.options.nodeHeight ? this.options.nodeHeight(node) : 24;
+
+    // account for drop slots:
+    return nodeHeight + (node.index === 0 ?  2 : 1) * this.dropSlotHeight(node);
+  }
+
+  dropSlotHeight(node: TreeNode):number {
+    if (node.data.virtual) {
+      return 0;
+    }
+    return this.options.dropSlotHeight ? this.options.dropSlotHeight(node) : 2;
+  }
 }

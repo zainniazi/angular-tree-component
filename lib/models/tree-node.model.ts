@@ -1,4 +1,3 @@
-import { ElementRef } from '@angular/core';
 import { observable, computed } from 'mobx';
 import { TreeModel } from './tree.model';
 import { TreeOptions } from './tree-options.model';
@@ -14,7 +13,6 @@ export class TreeNode implements ITreeNode {
   @computed get isActive() { return this.treeModel.isActive(this); };
   @computed get isFocused() { return this.treeModel.isNodeFocused(this); };
 
-  elementRef: ElementRef;
   allowDrop: (draggedElement: any) => boolean;
   @observable children: TreeNode[];
   @observable index: number;
@@ -23,6 +21,11 @@ export class TreeNode implements ITreeNode {
   }
   @computed get path(): string[] {
     return this.parent ? [...this.parent.path, this.id] : [];
+  }
+
+  get elementRef(): any {
+    throw `Element Ref is no longer supported since introducing virtual scroll\n
+      You may use a template to obtain a reference to the element`;
   }
 
   private _originalNode: any;
@@ -262,22 +265,7 @@ export class TreeNode implements ITreeNode {
   }
 
   scrollIntoView(force = false) {
-    if (this.elementRef) {
-      const nativeElement = this.elementRef.nativeElement;
-
-      if (!force) {
-        try {
-          this.treeModel.renderer.invokeElementMethod(this.elementRef.nativeElement, 'scrollIntoViewIfNeeded', []);
-        } catch (e) {
-          this.treeModel.renderer.invokeElementMethod(this.elementRef.nativeElement, 'scrollIntoView', []);
-        }
-      }
-      else {
-        this.treeModel.renderer.invokeElementMethod(this.elementRef.nativeElement, 'scrollIntoView', []);
-      }
-
-      return this;
-    }
+    this.treeModel.virtualScroll.scrollIntoView(this, force);
   }
 
   focus() {
@@ -364,12 +352,7 @@ export class TreeNode implements ITreeNode {
   }
 
   getSelfHeight() {
-    if (this.data.virtual) {
-      return 0;
-    }
-    else {
-      return this.index === 0 ? 26 : 24;
-    }
+    return this.options.nodeHeight(this);
   }
 
   @computed get relativePosition() {

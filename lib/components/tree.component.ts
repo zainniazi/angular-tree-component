@@ -1,5 +1,5 @@
 import {
-  Component, Input, Output, OnChanges, SimpleChange, EventEmitter, ElementRef,
+  Component, Input, Output, OnChanges, SimpleChange, EventEmitter,
   ViewEncapsulation, ContentChild, TemplateRef, HostListener, ChangeDetectionStrategy
 } from '@angular/core';
 import { TreeModel } from '../models/tree.model';
@@ -91,7 +91,6 @@ export class TreeComponent implements OnChanges {
   constructor(
     public treeModel: TreeModel,
     public treeDraggedElement: TreeDraggedElement,
-    private elementRef: ElementRef,
     private virtualScroll:TreeVirtualScroll)
   {
     treeModel.eventNames.forEach((name) => this[name] = new EventEmitter());

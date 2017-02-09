@@ -74,6 +74,19 @@ export interface ITreeOptions {
     * Supply function for getting a custom class for the node component
     */
    nodeClass?: (node: ITreeNode) => string;
+   /**
+    * Supply a function for getting each node's height - for virtual scrolling
+    * The tree model will account for the extra pixels for the drop slots
+    * Default is 22
+    */
+   nodeHeight?: (node: ITreeNode) => number;
+   /**
+    * Supply a function for getting the height of the dropslow that's located
+    * between nodes. This is used for height calculations for virtual scrolling
+    * Default is 2
+    */
+   dropSlotHeight?: (node: ITreeNode) => number;
+
  }
 
 /**

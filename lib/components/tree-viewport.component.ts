@@ -2,7 +2,6 @@ import {
   Component, ElementRef, ViewEncapsulation, HostListener
 } from '@angular/core';
 import { TreeVirtualScroll } from '../models/tree-virtual-scroll.model';
-import { TreeModel } from '../models/tree.model';
 
 import { throttle } from 'lodash';
 
@@ -27,17 +26,18 @@ export class TreeViewportComponent {
   _debounceOnVirtualScroll:() => void;
 
   constructor(
-    public treeModel: TreeModel,
     private elementRef: ElementRef,
     private virtualScroll:TreeVirtualScroll)
   {
-    virtualScroll.setTreeModel(treeModel);
-
     this._debounceOnVirtualScroll = throttle(this._onVirtualScroll.bind(this), SCROLL_REFRESH_INTERVAL);
   }
 
   ngAfterViewInit() {
     setTimeout(() => this._onVirtualScroll());
+  }
+
+  ngOnDestroy() {
+    this.virtualScroll.clear();
   }
 
   @HostListener('scroll', ['$event'])
@@ -46,7 +46,7 @@ export class TreeViewportComponent {
   }
 
   _onWheel(e) {
-    this._debounceOnVirtualScroll();
+    this._onVirtualScroll();
   }
 
   _onVirtualScroll() {

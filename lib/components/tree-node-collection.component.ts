@@ -1,7 +1,7 @@
 import {
   Component, Input, ViewEncapsulation
 } from '@angular/core';
-import { reaction } from 'mobx';
+import { reaction, autorun } from 'mobx';
 import { TreeVirtualScroll } from '../models/tree-virtual-scroll.model';
 import { TreeNode } from '../models/tree-node.model';
 
@@ -31,20 +31,32 @@ export class TreeNodeCollectionComponent {
   viewportNodes:TreeNode[];
   marginTop:string;
 
-  _dispose:any;
+  _dispose = [];
 
   constructor(private virtualScroll:TreeVirtualScroll) {
   }
+
   ngOnInit() {
-    this._dispose = reaction(
-      () => this.virtualScroll.getViewportNodes(this.nodes).map(n => n.index),
-      (nodeIndexes) => {
-        this.viewportNodes = nodeIndexes.map((i) => this.nodes[i]);
-        this.marginTop = this.viewportNodes[0] ? `${this.viewportNodes[0].relativePosition}px` : '0';
-      }, { compareStructural: true, fireImmediately: true });
+    this._dispose = [
+      autorun(() => {
+        // If we don't fetch node position serially,
+        // then first node to be fetched might be a distnat sibling (like index 5000)
+        // and it will cause a stack overflow when calculating recursive attributes
+        // such as position or relativePosition
+        this.nodes.forEach((node) => node.position);
+      }),
+      reaction(
+        // return node indexes so we can compare structurally,
+        () => this.virtualScroll.getViewportNodes(this.nodes).map(n => n.index),
+        (nodeIndexes) => {
+          this.viewportNodes = nodeIndexes.map((i) => this.nodes[i]);
+          this.marginTop = this.viewportNodes[0] ? `${this.viewportNodes[0].relativePosition}px` : '0';
+        }, { compareStructural: true, fireImmediately: true }
+      )
+    ];
   }
 
   ngOnDestroy() {
-    this._dispose();
+    this._dispose.forEach(d => d());
   }
 }

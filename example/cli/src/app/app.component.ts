@@ -95,67 +95,66 @@ export class AppComponent {
   nodes:any[] = null;
   constructor() {
     // setTimeout(() => {
-      this.nodes = [];
-      //   {
-      //
-      //     expanded: false,
-      //     name: 'root expanded',
-      //     subTitle: 'the root',
-      //     children: [
-      //       {
-      //         name: 'child1',
-      //         subTitle: 'a good child',
-      //         hasChildren: false
-      //       }, {
-      //
-      //         name: 'child2',
-      //         subTitle: 'a bad child',
-      //         hasChildren: false
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     name: 'root2',
-      //     subTitle: 'the second root',
-      //     children: [
-      //       {
-      //         name: 'child2.1',
-      //         subTitle: 'new and improved',
-      //         hasChildren: false
-      //       }, {
-      //
-      //         name: 'child2.2',
-      //         subTitle: 'new and improved2',
-      //         children: [
-      //           {
-      //             uuid: 1001,
-      //             name: 'subsub',
-      //             subTitle: 'subsub',
-      //             hasChildren: false
-      //           }
-      //         ]
-      //       }
-      //     ]
-      //   },
-      //   {
-      //
-      //     name: 'asyncroot',
-      //     hasChildren: true
-      //   }
-      // ];
-      //
-      for(let i = 0; i < 4; i++) {
+      this.nodes = [
+        {
+
+          expanded: false,
+          name: 'root expanded',
+          subTitle: 'the root',
+          children: [
+            {
+              name: 'child1',
+              subTitle: 'a good child',
+              hasChildren: false
+            }, {
+
+              name: 'child2',
+              subTitle: 'a bad child',
+              hasChildren: false
+            }
+          ]
+        },
+        {
+          name: 'root2',
+          subTitle: 'the second root',
+          children: [
+            {
+              name: 'child2.1',
+              subTitle: 'new and improved',
+              hasChildren: false
+            }, {
+
+              name: 'child2.2',
+              subTitle: 'new and improved2',
+              children: [
+                {
+                  uuid: 1001,
+                  name: 'subsub',
+                  subTitle: 'subsub',
+                  hasChildren: false
+                }
+              ]
+            }
+          ]
+        },
+        {
+
+          name: 'asyncroot',
+          hasChildren: true
+        }
+      ];
+
+      for(let i = 0; i < 10000; i++) {
         this.nodes.push({
           name: `rootDynamic${i}`,
           subTitle: `root created dynamically ${i}`,
-          children: new Array(10000).fill(null).map((item, n) => ({
+          children: new Array(4).fill(null).map((item, n) => ({
             name: `childDynamic${i}.${n}`,
             subTitle: `child created dynamically ${i}`,
             hasChildren: false
           }))
         });
       }
-      console.time();
   }
 
   asyncChildren = [
@@ -167,10 +166,6 @@ export class AppComponent {
       subTitle: 'new and improved2'
     }
   ];
-
-  ngAfterViewInit() {
-    console.timeEnd();
-  }
 
   getChildren(node:any) {
     return new Promise((resolve, reject) => {

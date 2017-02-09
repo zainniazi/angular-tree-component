@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, AfterViewInit, ViewEncapsulation, TemplateRef } from '@angular/core';
+import { Component, Input, ViewEncapsulation, TemplateRef } from '@angular/core';
 import { TreeNode } from '../models/tree-node.model';
 
 @Component({
@@ -62,15 +62,12 @@ import { TreeNode } from '../models/tree-node.model';
     </div>`
 })
 
-export class TreeNodeComponent implements AfterViewInit {
+export class TreeNodeComponent {
   @Input() node: TreeNode;
   @Input() index: number;
   @Input() templates: any;
 
-  constructor(private elementRef: ElementRef) {
+  constructor() {
   }
 
-  ngAfterViewInit() {
-    this.node.elementRef = this.elementRef;
-  }
 }
