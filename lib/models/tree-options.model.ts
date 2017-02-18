@@ -133,18 +133,22 @@ export class TreeOptions {
     return this.options.nodeClass ? this.options.nodeClass(node) : '';
   }
 
-  nodeHeight(node: TreeNode):number {
+  nodeHeight(node: TreeNode): number {
     if (node.data.virtual) {
       return 0;
     }
 
-    const nodeHeight = this.options.nodeHeight ? this.options.nodeHeight(node) : 24;
+    let nodeHeight = this.options.nodeHeight || 22;
+
+    if (typeof nodeHeight === 'function') {
+      nodeHeight = nodeHeight(node);
+    }
 
     // account for drop slots:
     return nodeHeight + (node.index === 0 ?  2 : 1) * this.dropSlotHeight(node);
   }
 
-  dropSlotHeight(node: TreeNode):number {
+  dropSlotHeight(node: TreeNode): number {
     if (node.data.virtual) {
       return 0;
     }

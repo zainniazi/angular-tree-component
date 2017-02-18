@@ -1,5 +1,5 @@
 import {
-  Component, Input, Output, OnChanges, SimpleChange, EventEmitter,
+  Component, Input, Output, OnChanges, SimpleChange, EventEmitter, Renderer,
   ViewEncapsulation, ContentChild, TemplateRef, HostListener, ChangeDetectionStrategy
 } from '@angular/core';
 import { TreeModel } from '../models/tree.model';
@@ -76,7 +76,6 @@ export class TreeComponent implements OnChanges {
 
   @Output() onToggle;
   @Output() onToggleExpanded;
-  @Output() onActiveChanged;
   @Output() onActivate;
   @Output() onDeactivate;
   @Output() onFocus;
@@ -89,10 +88,10 @@ export class TreeComponent implements OnChanges {
   @Output() onEvent;
 
   constructor(
+    private renderer: Renderer,
     public treeModel: TreeModel,
     public treeDraggedElement: TreeDraggedElement,
-    private virtualScroll:TreeVirtualScroll)
-  {
+    public virtualScroll: TreeVirtualScroll) {
     treeModel.eventNames.forEach((name) => this[name] = new EventEmitter());
   }
 
@@ -109,7 +108,7 @@ export class TreeComponent implements OnChanges {
 
   @HostListener('body: mousedown', ['$event'])
   onMousedown($event) {
-    let insideClick = $event.target.closest('Tree');
+    let insideClick = this.renderer.invokeElementMethod($event.target, 'closest', ['Tree']);
     if (!insideClick) {
       this.treeModel.setFocus(false);
     }

@@ -1,5 +1,5 @@
 import {
-  Component, Input, ViewEncapsulation
+  Component, Input, ViewEncapsulation, OnInit, OnDestroy
 } from '@angular/core';
 import { reaction, autorun } from 'mobx';
 import { TreeVirtualScroll } from '../models/tree-virtual-scroll.model';
@@ -15,7 +15,7 @@ import * as _ from 'lodash';
       <div
         [style.margin-top]="marginTop">
         <TreeNode
-          *ngFor="let node of viewportNodes"
+          *ngFor="let node of viewportNodes; trackBy: index"
           [node]="node"
           [index]="node.index"
           [templates]="templates">
@@ -24,16 +24,16 @@ import * as _ from 'lodash';
     </div>
   `
 })
-export class TreeNodeCollectionComponent {
+export class TreeNodeCollectionComponent implements OnInit, OnDestroy {
   @Input() nodes;
   @Input() templates;
 
-  viewportNodes:TreeNode[];
-  marginTop:string;
+  viewportNodes: TreeNode[];
+  marginTop: string;
 
   _dispose = [];
 
-  constructor(private virtualScroll:TreeVirtualScroll) {
+  constructor(private virtualScroll: TreeVirtualScroll) {
   }
 
   ngOnInit() {

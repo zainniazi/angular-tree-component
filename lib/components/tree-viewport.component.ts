@@ -1,5 +1,5 @@
 import {
-  Component, ElementRef, ViewEncapsulation, HostListener
+  Component, ElementRef, ViewEncapsulation, HostListener, AfterViewInit, OnDestroy
 } from '@angular/core';
 import { TreeVirtualScroll } from '../models/tree-virtual-scroll.model';
 
@@ -22,13 +22,12 @@ const isFirefox = navigator && navigator.userAgent && navigator.userAgent.indexO
     <ng-content></ng-content>
   `
 })
-export class TreeViewportComponent {
-  _debounceOnVirtualScroll:() => void;
+export class TreeViewportComponent implements AfterViewInit, OnDestroy {
+  _debounceOnVirtualScroll: () => void;
 
   constructor(
     private elementRef: ElementRef,
-    private virtualScroll:TreeVirtualScroll)
-  {
+    private virtualScroll: TreeVirtualScroll) {
     this._debounceOnVirtualScroll = throttle(this._onVirtualScroll.bind(this), SCROLL_REFRESH_INTERVAL);
   }
 

@@ -7,7 +7,7 @@ const Y_DIVIDER = 100;
 
 @Injectable()
 export class TreeVirtualScroll {
-  private _dispose:any;
+  private _dispose: any;
 
   @observable yBlocks = 0;
   @observable x = 0;
@@ -51,20 +51,17 @@ export class TreeVirtualScroll {
   @action scrollIntoView(node, force, scrollToMiddle = true) {
     if (force || // force scroll to node
       node.position < this.y || // node is above viewport
-      node.position + node.getSelfHeight() > this.y + this.viewportHeight)  // node is below viewport
-    {
+      node.position + node.getSelfHeight() > this.y + this.viewportHeight) { // node is below viewport
       this.viewport.scrollTop = scrollToMiddle ?
         node.position - this.viewportHeight / 2 : // scroll to middle
         node.position; // scroll to start
 
-      this.yBlocks = Math.floor(this.viewport.scrollTop / Y_DIVIDER)
+      this.yBlocks = Math.floor(this.viewport.scrollTop / Y_DIVIDER);
     }
   }
 
   getViewportNodes(nodes) {
     if (!this.viewportHeight) return [];
-    let i = 0;
-    let found = false;
 
     // Search for first node in the viewport using binary search
     // Look for first node that starts after the beginning of the viewport (with buffer)
@@ -81,7 +78,7 @@ export class TreeVirtualScroll {
     }, firstIndex);
 
     const viewportNodes = [];
-    for (let i = firstIndex; i < lastIndex; i++) {
+    for (let i = firstIndex; i <= lastIndex; i++) {
       viewportNodes.push(nodes[i]);
     }
 
@@ -100,7 +97,7 @@ function binarySearch(nodes, condition, firstIndex = 0) {
   let index = firstIndex;
   let toIndex = nodes.length - 1;
 
-  while(index !== toIndex) {
+  while (index !== toIndex) {
     let midIndex = Math.floor((index + toIndex) / 2);
 
     if (condition(nodes[midIndex])) {

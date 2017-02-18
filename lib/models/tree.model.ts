@@ -23,7 +23,7 @@ export class TreeModel implements ITreeModel {
   @observable focusedNodeId: string = null;
   @observable virtualRoot: TreeNode;
   firstUpdate = true;
-  public virtualScroll:TreeVirtualScroll;
+  public virtualScroll: TreeVirtualScroll;
 
   eventNames = Object.keys(TREE_EVENTS);
 
