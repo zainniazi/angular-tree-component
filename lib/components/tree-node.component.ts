@@ -2,6 +2,15 @@ import { Component, Input, ViewEncapsulation, TemplateRef, ElementRef } from '@a
 import { TreeNode } from '../models/tree-node.model';
 import { deprecatedSelector } from '../deprecated-selector';
 
+import {
+    trigger,
+    state,
+    style,
+    transition,
+    animate,
+    keyframes
+ } from '@angular/animations';
+
 @Component({
   selector: 'TreeNode, tree-node',
   encapsulation: ViewEncapsulation.None,
@@ -26,6 +35,7 @@ import { deprecatedSelector } from '../deprecated-selector';
   template: `
     <ng-container *mobxAutorun>
       <div
+        [@toggleNode]="node.isExpanded ? 'open' : 'closed'"
         *ngIf="!templates.treeNodeFullTemplate"
         [class]="node.getClass()"
         [class.tree-node]="true"
@@ -60,7 +70,13 @@ import { deprecatedSelector } from '../deprecated-selector';
         [ngTemplateOutlet]="templates.treeNodeFullTemplate"
         [ngOutletContext]="{ $implicit: node, node: node, index: index, templates: templates }">
       </ng-container>
-    </ng-container>`
+    </ng-container>`,
+  animations: [
+    trigger('toggleNode', [
+            transition('open => closed', animate(250, style({maxHeight: 0}))),
+            transition('closed => open', animate(250, style({maxHeight: 1000})))
+        ]),
+  ]
 })
 
 export class TreeNodeComponent {

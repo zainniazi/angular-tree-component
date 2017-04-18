@@ -8,6 +8,7 @@ import { TreeNode } from '../models/tree-node.model';
 import { TreeModel } from '../models/tree.model';
 import { deprecatedSelector } from '../deprecated-selector';
 
+
 @Component({
   selector: 'tree-node-collection, TreeNodeCollection',
   encapsulation: ViewEncapsulation.None,

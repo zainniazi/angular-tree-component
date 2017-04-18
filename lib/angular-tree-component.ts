@@ -2,6 +2,8 @@ import { NgModule }      from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MobxAngularModule } from 'mobx-angular';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { TREE_ACTIONS, IActionMapping, IActionHandler } from './models/tree-options.model';
 import { ITreeOptions, IAllowDropFn, IAllowDragFn } from './defs/api';
 import { KEYS } from './constants/keys';
@@ -71,7 +73,8 @@ export {
   ],
   imports: [
     CommonModule,
-    MobxAngularModule
+    MobxAngularModule,
+    BrowserAnimationsModule
   ],
   providers: [
     TreeDraggedElement

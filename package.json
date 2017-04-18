@@ -59,7 +59,8 @@
   ],
   "peerDependencies": {
     "@angular/common": ">=2.0.0",
-    "@angular/core": ">=2.0.0"
+    "@angular/core": ">=2.0.0",
+    "@angular/animations": ">=2.0.0"
   },
   "dependencies": {
     "lodash-es": "4.17.4",
@@ -67,6 +68,7 @@
     "mobx-angular": "^1.4.2"
   },
   "devDependencies": {
+    "@angular/animations": "^4.0.0",
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/compiler-cli": "^4.0.0",
