@@ -6,6 +6,8 @@ import { FullTreeComponent } from './fulltree/fulltree.component';
 import { TemplatesComponent } from './templates/templates.component';
 import { FieldsComponent } from './fields/fields.component';
 import { FilterComponent } from './filter/filter.component';
+import { AsyncComponent } from './async/async.component';
+import { ActionMappingComponent } from './action-mapping/action-mapping.component';
 
 const routes: Routes = [
   {
@@ -27,6 +29,14 @@ const routes: Routes = [
   {
     path: 'filter',
     component: FilterComponent
+  },
+  {
+    path: 'async',
+    component: AsyncComponent
+  },
+  {
+    path: 'action-mapping',
+    component: ActionMappingComponent
   }
 ];
 

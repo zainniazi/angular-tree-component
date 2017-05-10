@@ -17,6 +17,8 @@ import { FieldsComponent } from './fields/fields.component';
   But remember to turn off (to allow users of MobX not to use strict mode in their apps)
 */
 import { useStrict } from 'mobx';
+import { AsyncComponent } from './async/async.component';
+import { ActionMappingComponent } from './action-mapping/action-mapping.component';
 useStrict(true);
 
 
@@ -27,7 +29,9 @@ useStrict(true);
     FullTreeComponent,
     TemplatesComponent,
     FieldsComponent,
-    FilterComponent
+    FilterComponent,
+    AsyncComponent,
+    ActionMappingComponent
   ],
   imports: [
     BrowserModule,

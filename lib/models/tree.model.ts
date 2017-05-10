@@ -257,9 +257,11 @@ export class TreeModel implements ITreeModel {
     }
   }
 
-  @action setExpandedNode(node, value) {
+  @action setExpandedNode(node, value, fireEvent = true) {
     this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, {[node.id]: value});
-    this.fireEvent({ eventName: TREE_EVENTS.onToggleExpanded, node, isExpanded: value });
+    if (fireEvent) {
+      this.fireEvent({ eventName: TREE_EVENTS.onToggleExpanded, node, isExpanded: value });
+    }
   }
 
   @action expandAll() {
@@ -383,8 +385,8 @@ export class TreeModel implements ITreeModel {
   private _calculateExpandedNodes(startNode = null) {
     startNode = startNode || this.virtualRoot;
 
-    if (startNode.data[this.options.isExpandedField]) {
-      this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, {[startNode.id]: true});
+    if (startNode.getField('isExpanded')) {
+      startNode.setIsExpanded(true);
     }
     if (startNode.children) {
       startNode.children.forEach((child) => this._calculateExpandedNodes(child));

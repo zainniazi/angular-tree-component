@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 const { first, last } = _;
 
 export class TreeNode implements ITreeNode {
-  @computed get isHidden() { return this.treeModel.isHidden(this); };
+  @computed get isHidden() { return this.treeModel.isHidden(this) || this.getField('isHidden'); };
   @computed get isExpanded() { return this.treeModel.isExpanded(this); };
   @computed get isActive() { return this.treeModel.isActive(this); };
   @computed get isFocused() { return this.treeModel.isNodeFocused(this); };

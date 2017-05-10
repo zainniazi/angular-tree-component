@@ -221,6 +221,10 @@ export class FullTreeComponent {
     actionMapping,
     nodeHeight: 23,
     allowDrag: true,
+    allowDrop: (node) => {
+      console.log('allow');
+      return true;
+    },
     useVirtualScroll: true,
     animateExpand: true,
     animateSpeed: 30,
