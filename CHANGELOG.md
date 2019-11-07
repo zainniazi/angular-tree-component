@@ -1,3 +1,7 @@
+<a name="8.5.1"></a>
+# 8.5.1 (2019-07-11)
+* Changed options input to ITreeOptions
+
 <a name="8.5.0"></a>
 # 8.5.0 (2019-06-11)
 * Support IVY by removing transitive dependency on Renderer via mobx-angular

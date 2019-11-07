@@ -6,6 +6,7 @@ import { TreeViewportComponent } from './tree-viewport.component';
 
 import includes from 'lodash/includes';
 import pick from 'lodash/pick';
+import { ITreeOptions } from '../defs/api';
 
 @Component({
   selector: 'Tree, tree-root',
@@ -39,9 +40,6 @@ import pick from 'lodash/pick';
   `
 })
 export class TreeComponent implements OnChanges {
-  _nodes: any[];
-  _options: TreeOptions;
-
   @ContentChild('loadingTemplate', { static: false }) loadingTemplate: TemplateRef<any>;
   @ContentChild('treeNodeTemplate', { static: false }) treeNodeTemplate: TemplateRef<any>;
   @ContentChild('treeNodeWrapperTemplate', { static: false }) treeNodeWrapperTemplate: TemplateRef<any>;
@@ -52,7 +50,7 @@ export class TreeComponent implements OnChanges {
   @Input() set nodes(nodes: any[]) {
   };
 
-  @Input() set options(options: TreeOptions) {
+  @Input() set options(options: ITreeOptions) {
   };
 
   @Input() set focused(value: boolean) {
