@@ -1,3 +1,7 @@
+<a name="8.5.2"></a>
+# 8.5.2 (2019-03-12)
+* Fixed computed value after updating model, because parent was null and we got a race-condition
+
 <a name="8.5.1"></a>
 # 8.5.1 (2019-07-11)
 * Changed options input to ITreeOptions
