@@ -3,10 +3,7 @@ import { TreeModel } from './tree.model';
 import { KEYS } from '../constants/keys';
 import { ITreeOptions } from '../defs/api';
 
-import defaultsDeep from 'lodash/defaultsDeep';
-import get from 'lodash/get';
-import omit from 'lodash/omit';
-import isNumber from 'lodash/isNumber';
+import { defaultsDeep, get, omit, isNumber } from 'lodash';
 
 export interface IActionHandler {
   (tree: TreeModel, node: TreeNode, $event: any, ...rest);
@@ -26,9 +23,9 @@ export const TREE_ACTIONS = {
   COLLAPSE: (tree: TreeModel, node: TreeNode, $event: any) => node.collapse(),
   DRILL_DOWN: (tree: TreeModel, node: TreeNode, $event: any) => tree.focusDrillDown(),
   DRILL_UP: (tree: TreeModel, node: TreeNode, $event: any) => tree.focusDrillUp(),
-  NEXT_NODE: (tree: TreeModel, node: TreeNode, $event: any) =>  tree.focusNextNode(),
-  PREVIOUS_NODE: (tree: TreeModel, node: TreeNode, $event: any) =>  tree.focusPreviousNode(),
-  MOVE_NODE: (tree: TreeModel, node: TreeNode, $event: any, {from , to}: {from: any, to: any}) => {
+  NEXT_NODE: (tree: TreeModel, node: TreeNode, $event: any) => tree.focusNextNode(),
+  PREVIOUS_NODE: (tree: TreeModel, node: TreeNode, $event: any) => tree.focusPreviousNode(),
+  MOVE_NODE: (tree: TreeModel, node: TreeNode, $event: any, { from, to }: { from: any, to: any }) => {
     // default action assumes from = node, to = {parent, index}
     if ($event.ctrlKey) {
       tree.copyNode(from, to);
@@ -93,7 +90,7 @@ export class TreeOptions {
   get animateAcceleration(): number { return this.options.animateAcceleration || 1.2; }
   get scrollOnActivate(): boolean { return this.options.scrollOnActivate === undefined ? true : this.options.scrollOnActivate; }
   get rtl(): boolean { return !!this.options.rtl; }
-  get rootId(): any {return this.options.rootId; }
+  get rootId(): any { return this.options.rootId; }
   get useCheckbox(): boolean { return this.options.useCheckbox; }
   get useTriState(): boolean { return this.options.useTriState === undefined ? true : this.options.useTriState; }
   get scrollContainer(): HTMLElement { return this.options.scrollContainer; }
@@ -149,7 +146,7 @@ export class TreeOptions {
     }
 
     // account for drop slots:
-    return nodeHeight + (node.index === 0 ?  2 : 1) * this.dropSlotHeight;
+    return nodeHeight + (node.index === 0 ? 2 : 1) * this.dropSlotHeight;
   }
 
   get dropSlotHeight(): number {

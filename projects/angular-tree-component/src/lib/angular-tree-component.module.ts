@@ -33,6 +33,7 @@ import { TreeDropDirective } from './directives/tree-drop.directive';
 import { TreeDragDirective } from './directives/tree-drag.directive';
 import { TreeAnimateOpenDirective } from './directives/tree-animate-open.directive';
 
+
 import './polyfills';
 
 @NgModule({
@@ -74,7 +75,7 @@ import './polyfills';
   providers: []
 })
 export class TreeModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<TreeModule> {
     return {
       ngModule: TreeModule,
       providers: [TreeDraggedElement]
@@ -96,6 +97,7 @@ export {
   IAllowDragFn,
   LoadingComponent,
   TreeAnimateOpenDirective,
+  TreeMobxAutorunDirective,
   TreeComponent,
   TreeNodeComponent,
   TreeNodeWrapperComponent,
@@ -109,4 +111,4 @@ export {
   TreeViewportComponent,
   TreeNodeCheckboxComponent,
   ITreeState
-};
+};  

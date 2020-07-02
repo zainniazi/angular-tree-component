@@ -1,42 +1,27 @@
-[![npm version](https://badge.fury.io/js/angular-tree-component.svg)](https://badge.fury.io/js/angular-tree-component)
+# AngularTreeComponent
 
-# angular tree component
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.6.
 
-## News
+## Development server
 
-We are happy to announce, that starting today, [Circlon | group](https://circlon.de) is taking over this repository.
-We're going on this journey with the strong belief, that this component should not be missed by the community, and we are hoping on your continuous and significant support as always.
-On this new journey we will also receive technical guidance from [Adam](https://github.com/adamkleingit), who will help us to better understand the community, their needs and also to elevate this component to a completely new level of engineering.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Getting started, Docs, Demos & More
+## Code scaffolding
 
-[https://angular2-tree.readme.io/docs/](https://angular2-tree.readme.io/docs/)
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## Support
-[Stackoverflow](https://stackoverflow.com/questions/tagged/angular-tree-component)
+## Build
 
-[Slack Community](https://angular-tree-component.herokuapp.com/)
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Angular supported version
+## Running unit tests
 
-angular-tree-component supports angular 2 and above, and AoT compilation.
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Contributing
+## Running end-to-end tests
 
-run `npm run example:cli` and open [localhost:4200](http://localhost:4200) to test your code before submitting a pull request.
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-Windows users - if it doesn't work try `npm run example:cli:win`.
+## Further help
 
-To run tests locally - make sure port 4200 is available and run:
-
-```
-$ npm run example:cli  # Wait until webpack finishes and http://localhost:4200 is available
-$ npm run test:dev
-```
-
-Please check the issues / project before starting to work on a feature / bug to make sure it's not already in progress.
-
-## Contributors
-
-This project exists thanks to all the people who contribute.
-<a href="https://github.com/500tech/angular-tree-component/graphs/contributors"><img src="https://opencollective.com/angular-tree-component/contributors.svg?width=890&button=false" /></a>
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

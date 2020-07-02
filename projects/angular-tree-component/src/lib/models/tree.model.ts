@@ -7,12 +7,7 @@ import { TreeVirtualScroll } from './tree-virtual-scroll.model';
 import { ITreeModel, IDType, IDTypeDictionary } from '../defs/api';
 import { TREE_EVENTS } from '../constants/events';
 
-import first from 'lodash/first';
-import last from 'lodash/last';
-import compact from 'lodash/compact';
-import find from 'lodash/find';
-import isString from 'lodash/isString';
-import isFunction from 'lodash/isFunction';
+import { first, last, compact, find, isString, isFunction } from 'lodash';
 
 @Injectable()
 export class TreeModel implements ITreeModel, OnDestroy {
@@ -108,22 +103,22 @@ export class TreeModel implements ITreeModel, OnDestroy {
 
   @computed get hiddenNodes() {
     const nodes = Object.keys(this.hiddenNodeIds)
-        .filter((id) => this.hiddenNodeIds[id])
-        .map((id) => this.getNodeById(id));
+      .filter((id) => this.hiddenNodeIds[id])
+      .map((id) => this.getNodeById(id));
 
     return compact(nodes);
   }
 
   @computed get selectedLeafNodes() {
     const nodes = Object.keys(this.selectedLeafNodeIds)
-        .filter((id) => this.selectedLeafNodeIds[id])
-        .map((id) => this.getNodeById(id));
+      .filter((id) => this.selectedLeafNodeIds[id])
+      .map((id) => this.getNodeById(id));
 
     return compact(nodes);
   }
 
   // locating nodes
-  getNodeByPath(path: any[], startNode= null): TreeNode {
+  getNodeByPath(path: any[], startNode = null): TreeNode {
     if (!path) return null;
 
     startNode = startNode || this.virtualRoot;
@@ -196,7 +191,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
   }
 
   // actions
-  @action setData({ nodes, options = null, events = null }: {nodes: any, options: any, events: any}) {
+  @action setData({ nodes, options = null, events = null }: { nodes: any, options: any, events: any }) {
     if (options) {
       this.options = new TreeOptions(options);
     }
@@ -302,7 +297,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
   }
 
   @action setSelectedNode(node, value) {
-    this.selectedLeafNodeIds = Object.assign({}, this.selectedLeafNodeIds, {[node.id]: value});
+    this.selectedLeafNodeIds = Object.assign({}, this.selectedLeafNodeIds, { [node.id]: value });
 
     if (value) {
       node.focus();
@@ -313,7 +308,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
   }
 
   @action setExpandedNode(node, value) {
-    this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, {[node.id]: value});
+    this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, { [node.id]: value });
     this.fireEvent({ eventName: TREE_EVENTS.toggleExpanded, node, isExpanded: value });
   }
 
@@ -326,7 +321,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
   }
 
   @action setIsHidden(node, value) {
-    this.hiddenNodeIds = Object.assign({}, this.hiddenNodeIds, {[node.id]: value});
+    this.hiddenNodeIds = Object.assign({}, this.hiddenNodeIds, { [node.id]: value });
   }
 
   @action setHiddenNodeIds(nodeIds) {
@@ -358,7 +353,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
       filterFn = (node) => node.displayField.toLowerCase().indexOf(filter.toLowerCase()) !== -1;
     }
     else if (isFunction(filter)) {
-       filterFn = filter;
+      filterFn = filter;
     }
     else {
       console.error('Don\'t know what to do with filter', filter);
@@ -407,7 +402,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
       eventName: TREE_EVENTS.moveNode,
       node: originalNode,
       to: { parent: to.parent.data, index: toIndex },
-      from: { parent: fromParent.data, index: fromIndex}
+      from: { parent: fromParent.data, index: fromIndex }
     });
   }
 
@@ -472,7 +467,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
   }
 
   calculateExpandedNodes() {
-      this._calculateExpandedNodes();
+    this._calculateExpandedNodes();
   }
 
   // private methods
@@ -504,7 +499,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
     startNode = startNode || this.virtualRoot;
 
     if (startNode.data[this.options.isExpandedField]) {
-      this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, {[startNode.id]: true});
+      this.expandedNodeIds = Object.assign({}, this.expandedNodeIds, { [startNode.id]: true });
     }
     if (startNode.children) {
       startNode.children.forEach((child) => this._calculateExpandedNodes(child));
@@ -521,7 +516,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
       });
 
     if (value) {
-      this.activeNodeIds = {[node.id]: true};
+      this.activeNodeIds = { [node.id]: true };
     }
     else {
       this.activeNodeIds = {};
@@ -529,7 +524,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
   }
 
   private _setActiveNodeMulti(node, value) {
-    this.activeNodeIds = Object.assign({}, this.activeNodeIds, {[node.id]: value});
+    this.activeNodeIds = Object.assign({}, this.activeNodeIds, { [node.id]: value });
   }
 
 }

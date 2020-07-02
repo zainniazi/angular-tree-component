@@ -4,8 +4,7 @@ import { TreeDraggedElement } from '../models/tree-dragged-element.model';
 import { TreeOptions } from '../models/tree-options.model';
 import { TreeViewportComponent } from './tree-viewport.component';
 
-import includes from 'lodash/includes';
-import pick from 'lodash/pick';
+import { includes, pick } from 'lodash';
 
 @Component({
   selector: 'Tree, tree-root',

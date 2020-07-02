@@ -4,10 +4,7 @@ import { TreeOptions } from './tree-options.model';
 import { ITreeNode } from '../defs/api';
 import { TREE_EVENTS } from '../constants/events';
 
-import first from 'lodash/first';
-import last from 'lodash/last';
-import some from 'lodash/some';
-import every from 'lodash/every';
+import { first, last, some, every } from 'lodash';
 
 export class TreeNode implements ITreeNode {
   private handler: IReactionDisposer;
@@ -17,7 +14,7 @@ export class TreeNode implements ITreeNode {
   @computed get isFocused() { return this.treeModel.isNodeFocused(this); };
   @computed get isSelected() {
     if (this.isSelectable()) {
-        return this.treeModel.isSelected(this);
+      return this.treeModel.isSelected(this);
     } else {
       return some(this.children, (node: TreeNode) => node.isSelected);
     }
@@ -136,8 +133,8 @@ export class TreeNode implements ITreeNode {
 
   findNextNode(goInside = true, skipHidden = false) {
     return goInside && this.isExpanded && this.getFirstChild(skipHidden) ||
-           this.findNextSibling(skipHidden) ||
-           this.parent && this.parent.findNextNode(false, skipHidden);
+      this.findNextSibling(skipHidden) ||
+      this.parent && this.parent.findNextNode(false, skipHidden);
   }
 
   findPreviousNode(skipHidden = false) {
@@ -176,7 +173,7 @@ export class TreeNode implements ITreeNode {
   }
 
   getClass(): string {
-    return [this.options.nodeClass(this), `tree-node-level-${ this.level }`].join(' ');
+    return [this.options.nodeClass(this), `tree-node-level-${this.level}`].join(' ');
   }
 
   onDrop($event) {
@@ -217,7 +214,8 @@ export class TreeNode implements ITreeNode {
               child.expand();
             }
           });
-      }}).then(() => {
+        }
+      }).then(() => {
         this.fireEvent({
           eventName: TREE_EVENTS.loadNodeChildren,
           node: this
